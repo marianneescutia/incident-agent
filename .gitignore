@@ -1,20 +1,14 @@
-# Python
 __pycache__/
 *.pyc
-*.pyo
-*.pyd
 .ipynb_checkpoints/
 
-# Environments
 .env
 .venv/
 venv/
 env/
 
-# Logs
 *.log
 
-# Large model files
 models/
 *.bin
 *.safetensors
@@ -22,11 +16,9 @@ models/
 *.pth
 *.ckpt
 
-# Cache folders
 .cache/
 huggingface/
 wandb/
 runs/
 
-# OS
 .DS_Store
