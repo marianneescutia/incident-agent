@@ -1,0 +1,99 @@
+model,valid_json,required_fields,keyword_match,safety,sample_output
+base,1,1.0,0.42857142857142855,1,"```json
+{
+  ""immediate_action"": ""Monitor and analyze the cache hit rate for any potential performance issues."",
+  ""short_term_mitigation"": ""Implement caching strategies that reduce the number of hits from disk, such as using LRU (Least Recently Used)"
+base,1,1.0,0.14285714285714285,1,"{
+  ""immediate_action"": ""Contact legal and IT departments for a formal investigation"",
+  ""short_term_mitigation"": ""Implement strong access controls, regular security audits, and data encryption to prevent unauthorized access"",
+  ""long_term_prevention"
+base,1,1.0,0.125,1,"```json
+{
+  ""immediate_action"": ""Stop the GPU and restart it"",
+  ""short_term_mitigation"": ""Increase system RAM or use a different GPU if possible"",
+  ""long_term_prevention"": ""Implement better resource management strategies in AI infrastructure""
+}
+```"
+base,1,1.0,0.42857142857142855,1,"```json
+{
+  ""immediate_action"": ""Restart the time synchronization service"",
+  ""short_term_mitigation"": ""Monitor and adjust the time synchronization settings as needed"",
+  ""long_term_prevention"": ""Implement a more robust time synchronization solution"""
+base,1,1.0,0.42857142857142855,1,"```json
+{
+  ""immediate_action"": ""Increase the memory allocation for the ETL job in the container."",
+  ""short_term_mitigation"": ""Implement a more efficient data processing strategy to reduce the need for large amounts of memory."",
+  ""long_term_prevent"
+base,1,1.0,0.625,1,"```json
+{
+  ""immediate_action"": ""Review and update the feature flag configuration to ensure it is correctly configured."",
+  ""short_term_mitigation"": ""Implement a rollback plan if necessary, such as reverting changes or restoring from a backup."",
+  ""l"
+base,1,1.0,0.25,1,"```json
+{
+  ""immediate_action"": ""Review the container images and their dependencies for known vulnerabilities."",
+  ""short_term_mitigation"": ""Update or remove any containers that have identified vulnerabilities."",
+  ""long_term_prevention"": ""Implement "
+base,1,1.0,0.0,1,"```json
+{
+  ""immediate_action"": ""Contact the application support team for assistance."",
+  ""short_term_mitigation"": ""Review and update the application's error logs to identify any potential issues."",
+  ""long_term_prevention"": ""Implement robust securit"
+base,1,1.0,0.1,1,"{
+  ""immediate_action"": ""Contact the IT support team for further assistance"",
+  ""short_term_mitigation"": ""Implement additional security measures such as firewalls, intrusion detection systems (IDS), and regular security audits"",
+  ""long_term_preventi"
+base,1,1.0,0.5555555555555556,1,"```json
+{
+  ""immediate_action"": ""Contact the network team for further assistance"",
+  ""short_term_mitigation"": ""Review and update the load balancer configuration to ensure proper health check settings."",
+  ""long_term_prevention"": ""Implement a more rob"
+grpo,1,1.0,0.42857142857142855,1,"```json
+{
+  ""immediate_action"": ""Monitor and analyze the cache hit rate for any potential performance issues."",
+  ""short_term_mitigation"": ""Implement caching strategies that reduce the number of hits from frequently accessed data."",
+  ""long_term_prev"
+grpo,1,1.0,0.14285714285714285,1,"{
+  ""immediate_action"": ""Contact legal and IT departments for a formal investigation"",
+  ""short_term_mitigation"": ""Implement strong access controls, regular security audits, and data encryption to prevent unauthorized access"",
+  ""long_term_prevention"
+grpo,1,1.0,0.125,1,"```json
+{
+  ""immediate_action"": ""Stop the GPU and restart it"",
+  ""short_term_mitigation"": ""Increase system RAM or use a different GPU if possible"",
+  ""long_term_prevention"": ""Implement better resource management strategies in AI infrastructure""
+}
+```"
+grpo,1,1.0,0.42857142857142855,1,"```json
+{
+  ""immediate_action"": ""Restart the time synchronization service"",
+  ""short_term_mitigation"": ""Monitor and adjust the time synchronization settings as needed"",
+  ""long_term_prevention"": ""Implement a more robust time synchronization solution"""
+grpo,1,1.0,0.42857142857142855,1,"```json
+{
+  ""immediate_action"": ""Increase the memory allocation for the ETL job in the container."",
+  ""short_term_mitigation"": ""Implement a more efficient data processing strategy to reduce the need for large amounts of memory."",
+  ""long_term_prevent"
+grpo,1,1.0,0.625,1,"```json
+{
+  ""immediate_action"": ""Review and update the feature flag configuration to ensure it is correctly configured."",
+  ""short_term_mitigation"": ""Implement a rollback plan if necessary, such as reverting changes or restoring from a backup."",
+  ""l"
+grpo,1,1.0,0.25,1,"```json
+{
+  ""immediate_action"": ""Review the container images and their dependencies for known vulnerabilities."",
+  ""short_term_mitigation"": ""Update or remove any containers that have identified vulnerabilities."",
+  ""long_term_prevention"": ""Implement "
+grpo,1,1.0,0.0,1,"```json
+{
+  ""immediate_action"": ""Contact the application support team for assistance."",
+  ""short_term_mitigation"": ""Review and update the application's error logs to identify any potential issues."",
+  ""long_term_prevention"": ""Implement robust securit"
+grpo,1,1.0,0.4,1,"{
+  ""immediate_action"": ""Stop the execution of any critical services or applications that may be vulnerable to prompt injection attempts."",
+  ""short_term_mitigation"": ""Implement strong authentication and authorization mechanisms, use secure protocols"
+grpo,1,1.0,0.5555555555555556,1,"```json
+{
+  ""immediate_action"": ""Contact the network team for further assistance"",
+  ""short_term_mitigation"": ""Review and update the load balancer configuration to ensure proper health check settings."",
+  ""long_term_prevention"": ""Implement a more rob"

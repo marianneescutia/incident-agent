@@ -1,0 +1,12 @@
+streamlit
+torch
+transformers
+accelerate
+peft
+trl
+chromadb
+sentencepiece
+safetensors
+protobuf
+pandas
+scikit-learn
