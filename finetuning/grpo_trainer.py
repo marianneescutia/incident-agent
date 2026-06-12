@@ -1,23 +1,20 @@
-import os
-import sys
 import inspect
+import os
 
-CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(CURRENT_DIR)
-
-from trl import GRPOTrainer, GRPOConfig
-from transformers import AutoTokenizer
 from peft import LoraConfig
+from transformers import AutoTokenizer
+from trl import GRPOConfig, GRPOTrainer
 
-from dataset_builder import build_action_dataset
-from reward_functions import (
+from finetuning.dataset_builder import build_action_dataset
+from finetuning.reward_functions import (
     json_format_reward,
     remediation_keyword_reward,
     safety_reward
 )
+from utils.config import ACTION_ADAPTER_PATH, ACTION_BASE_MODEL
 
-MODEL_NAME = "Qwen/Qwen2.5-0.5B-Instruct"
-OUTPUT_DIR = "models/action-agent-grpo"
+MODEL_NAME = ACTION_BASE_MODEL
+OUTPUT_DIR = str(ACTION_ADAPTER_PATH)
 
 
 def make_grpo_config():
@@ -26,13 +23,20 @@ def make_grpo_config():
     desired_args = {
         "output_dir": OUTPUT_DIR,
         "learning_rate": 5e-6,
-        "per_device_train_batch_size": 1,
-        "gradient_accumulation_steps": 4,
+        "per_device_train_batch_size": 2,
+        "gradient_accumulation_steps": 2,
         "num_generations": 2,
         "max_completion_length": 100,
         "max_steps": 100,
         "logging_steps": 1,
         "save_steps": 50,
+        "seed": 42,
+        "bf16": True,
+        "gradient_checkpointing": True,
+        "model_init_kwargs": {"dtype": "bfloat16"},
+        "remove_unused_columns": False,
+        "mask_truncated_completions": True,
+        "log_completions": True,
         "report_to": [],
         "use_vllm": False,
     }
@@ -50,6 +54,7 @@ def make_grpo_config():
 
 
 def main():
+    os.makedirs(OUTPUT_DIR, exist_ok=True)
     dataset = build_action_dataset()
 
     tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)

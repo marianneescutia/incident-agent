@@ -1,0 +1,41 @@
+id,log,category,severity,impact,anomaly_detected,risk_level,likely_future_issue,confidence_score,immediate_action,short_term_mitigation,long_term_prevention
+1,ERROR: Database timeout CPU 95% Memory 89% Database connections exhausted,System Performance,High,Database operations unavailable,True,High,Service disruption,0.9,Restart database service,Increase connection pool,Implement load balancing and query optimization
+2,CRITICAL: Unauthorized access attempt 150 failed logins Multiple IP addresses,Security,Critical,Potential account compromise,True,Critical,Data breach,0.95,Block suspicious IPs,Enable MFA,Strengthen access control policies
+5,CRITICAL: API gateway returning 503 errors High request queue,Networking,Critical,External users cannot access services,True,Critical,Full API outage,0.93,Restart API gateway,Scale gateway replicas,Add autoscaling rules
+6,WARNING: Network packet loss 25% between services,Networking,Medium,Slow service communication,True,Medium,Service degradation,0.78,Route traffic to backup path,Investigate network devices,Improve network redundancy
+7,ERROR: Kubernetes pod crash loop detected Restart count 45,Platform,High,Service unavailable,True,High,Deployment outage,0.89,Rollback deployment,Inspect pod logs,Improve deployment validation
+8,WARNING: CPU usage sustained at 87% for 30 minutes,System Performance,Medium,Reduced performance,True,Medium,Resource exhaustion,0.76,Scale worker nodes,Monitor CPU trend,Add capacity planning
+9,CRITICAL: Ransomware-like file encryption activity detected,Security,Critical,Possible ransomware attack,True,Critical,Data loss,0.97,Isolate affected host,Start incident response protocol,Deploy endpoint protection rules
+11,WARNING: SSL certificate expiring in 2 days,Security,Medium,Possible HTTPS outage,True,Medium,Service access failure,0.82,Renew certificate,Validate certificate chain,Automate certificate renewal
+12,ERROR: Message queue backlog 50000 pending messages,Messaging,High,Delayed processing,True,High,Processing outage,0.87,Scale consumers,Increase queue throughput,Optimize async processing
+13,CRITICAL: Database replication lag 45 minutes,Database,Critical,Stale read data,True,Critical,Data inconsistency,0.92,Restart replication process,Reduce write pressure,Improve replication monitoring
+14,WARNING: Cache hit rate dropped to 20%,Performance,Medium,Increased backend load,True,Medium,Database overload,0.74,Restart cache service,Warm cache keys,Tune cache eviction policy
+15,ERROR: Authentication service unavailable,Security,Critical,Users cannot log in,True,Critical,Access outage,0.95,Restart auth service,Failover to backup auth node,Improve auth service redundancy
+16,WARNING: High error rate 12% on recommendation API,Application,Medium,Poor user experience,True,Medium,API degradation,0.77,Restart affected service,Inspect recent deployment,Add regression testing
+17,CRITICAL: Data pipeline failed during nightly batch,Data Engineering,High,Reports delayed,True,High,Missing business reports,0.86,Rerun failed pipeline,Check failed job dependencies,Add pipeline retry logic
+18,ERROR: ETL job memory exceeded container limit,Data Engineering,High,Data processing interrupted,True,High,Pipeline failure,0.84,Increase container memory,Optimize ETL partitions,Add resource profiling
+20,ERROR: Load balancer health checks failing,Networking,High,Traffic not routed correctly,True,High,Service outage,0.88,Restart load balancer,Verify backend health,Improve health check configuration
+21,INFO: Scheduled backup completed successfully,Operations,Low,No business impact,False,Low,No issue expected,0.2,No action required,Continue monitoring,Maintain backup schedule
+22,WARNING: Backup job skipped due to locked file,Operations,Medium,Backup incomplete,True,Medium,Data recovery gap,0.71,Rerun backup job,Identify locked file,Improve backup validation
+23,ERROR: Search index corruption detected,Search,High,Search results unavailable,True,High,Search outage,0.89,Rebuild search index,Switch to backup index,Add index integrity checks
+25,WARNING: Database deadlock rate increased,Database,Medium,Slow database transactions,True,Medium,Transaction failures,0.73,Kill blocking sessions,Review transaction logic,Optimize locking strategy
+26,ERROR: File upload service failing with 500 errors,Application,High,Users cannot upload files,True,High,Feature outage,0.84,Restart upload service,Check storage permissions,Add upload service monitoring
+27,WARNING: Container image vulnerability detected,Security,Medium,Potential exploit risk,True,Medium,Security exposure,0.8,Patch vulnerable image,Redeploy service,Automate image scanning
+28,ERROR: DNS resolution failures for internal services,Networking,High,Services cannot communicate,True,High,Internal outage,0.87,Restart DNS service,Check DNS records,Add DNS redundancy
+29,CRITICAL: Customer data API returning incorrect records,Data Quality,Critical,Incorrect customer data shown,True,Critical,Compliance incident,0.94,Disable affected endpoint,Validate data mapping,Add data quality gates
+30,WARNING: Model inference latency above 8 seconds,AI Service,Medium,Slow AI responses,True,Medium,User experience degradation,0.75,Restart inference service,Reduce batch size,Optimize model serving
+31,ERROR: GPU memory exhausted during inference,AI Infrastructure,High,Model requests failing,True,High,Inference outage,0.9,Restart model server,Lower max tokens,Use quantization or model sharding
+32,WARNING: Token usage spike detected in chatbot service,AI Service,Medium,Higher operating cost,True,Medium,Cost overrun,0.72,Apply rate limits,Analyze prompt size,Optimize prompts and caching
+33,CRITICAL: Prompt injection attempt detected,AI Security,High,Model behavior manipulation risk,True,High,Unsafe model output,0.89,Block malicious prompt,Apply input filtering,Implement prompt-injection guardrails
+34,ERROR: Vector database unavailable,RAG System,High,Retrieval disabled,True,High,RAG quality degradation,0.87,Restart vector DB,Use fallback retrieval,Add vector DB replication
+35,WARNING: Embedding generation queue delayed,RAG System,Medium,New documents not searchable,True,Medium,Stale retrieval results,0.7,Restart embedding worker,Scale embedding workers,Add async indexing pipeline
+37,CRITICAL: Billing calculation mismatch detected,Finance System,Critical,Incorrect billing risk,True,Critical,Financial loss,0.95,Pause billing job,Reconcile affected records,Add billing validation tests
+39,ERROR: Service dependency timeout from inventory API,Application,High,Order flow blocked,True,High,Order processing outage,0.86,Restart inventory API,Enable fallback cache,Improve dependency timeout handling
+40,CRITICAL: Production secrets exposed in logs,Security,Critical,Credential compromise,True,Critical,Unauthorized access,0.98,Rotate exposed secrets,Remove logs,Implement secret scanning
+41,WARNING: Low database connection pool availability,Database,Medium,Possible future database timeout,True,Medium,Connection exhaustion,0.76,Increase connection pool,Monitor active connections,Tune database pooling
+42,ERROR: Scheduler failed to trigger critical jobs,Operations,High,Automations not running,True,High,Operational delay,0.83,Restart scheduler,Manually trigger jobs,Add scheduler health checks
+44,ERROR: Object storage access denied,Storage,High,Files unavailable,True,High,Storage outage,0.85,Check storage credentials,Restore permissions,Automate permission validation
+45,CRITICAL: Fraud detection service offline,Risk System,Critical,Fraud checks unavailable,True,Critical,Fraud exposure,0.93,Restart fraud service,Route to backup model,Add high availability
+46,WARNING: Time synchronization drift detected,Infrastructure,Medium,Logs and authentication may fail,True,Medium,Authentication errors,0.67,Restart NTP service,Sync affected nodes,Monitor clock drift
+48,CRITICAL: Database primary node unreachable,Database,Critical,Database unavailable,True,Critical,Full database outage,0.96,Failover to replica,Verify replication health,Implement automated failover
+50,INFO: Health check passed for all services,Operations,Low,System healthy,False,Low,No issue expected,0.1,No action required,Continue monitoring,Maintain current operations

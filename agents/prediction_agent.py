@@ -1,4 +1,3 @@
-import os
 import time
 import pandas as pd
 
@@ -6,9 +5,7 @@ from sklearn.ensemble import RandomForestClassifier, IsolationForest
 from sklearn.preprocessing import LabelEncoder
 
 from utils.feature_extractor import extract_features
-
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-CSV_PATH = os.path.join(BASE_DIR, "sample_data", "incidents.csv")
+from utils.config import TRAIN_DATA_PATH
 
 risk_model = None
 isolation_model = None
@@ -22,7 +19,7 @@ def train_prediction_models():
     global risk_encoder
     global feature_columns
 
-    df = pd.read_csv(CSV_PATH)
+    df = pd.read_csv(TRAIN_DATA_PATH)
 
     feature_rows = [
         extract_features(log)

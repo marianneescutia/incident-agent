@@ -1,0 +1,5 @@
+# The AMD image already provides ROCm PyTorch, Transformers, PEFT, Accelerate,
+# Datasets, pandas, and scikit-learn. Do not install or replace torch.
+trl==0.24.0
+streamlit>=1.40,<2
+sentencepiece>=0.2,<1

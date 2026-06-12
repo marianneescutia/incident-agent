@@ -1,25 +1,22 @@
-import os
 import pandas as pd
-import chromadb
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-CSV_PATH = os.path.join(BASE_DIR, "sample_data", "incidents.csv")
+from utils.config import TRAIN_DATA_PATH
 
-client = chromadb.Client()
-COLLECTION_NAME = "incident_memory"
-
-
-def get_collection():
-    return client.get_or_create_collection(
-        name=COLLECTION_NAME
-    )
+documents = None
+ids = None
+metadatas = None
+document_vectors = None
+vectorizer = None
 
 
 def load_incident_rows():
-    df = pd.read_csv(CSV_PATH)
+    df = pd.read_csv(TRAIN_DATA_PATH)
 
     documents = []
     ids = []
+    metadatas = []
 
     for _, row in df.iterrows():
         doc = f"""
@@ -42,55 +39,60 @@ Long-Term Prevention: {row["long_term_prevention"]}
 """
         documents.append(doc)
         ids.append(str(row["id"]))
+        metadatas.append(
+            {
+                "category": str(row["category"]),
+                "risk_level": str(row["risk_level"]),
+                "severity": str(row["severity"]),
+            }
+        )
 
-    return documents, ids
-
-
-def reset_memory():
-    try:
-        client.delete_collection(COLLECTION_NAME)
-    except Exception:
-        pass
-
-    collection = get_collection()
-
-    documents, ids = load_incident_rows()
-
-    collection.add(
-        documents=documents,
-        ids=ids
-    )
-
-    return collection.count()
+    return documents, ids, metadatas
 
 
 def initialize_memory():
-    collection = get_collection()
+    global documents
+    global ids
+    global metadatas
+    global document_vectors
+    global vectorizer
 
-    if collection.count() == 0:
-        documents, ids = load_incident_rows()
-        collection.add(
-            documents=documents,
-            ids=ids
+    if documents is None:
+        documents, ids, metadatas = load_incident_rows()
+        vectorizer = TfidfVectorizer(
+            ngram_range=(1, 2),
+            sublinear_tf=True,
+            stop_words="english",
         )
+        document_vectors = vectorizer.fit_transform(documents)
 
-    return collection.count()
+    return len(documents)
+
+
+def reset_memory():
+    global documents
+    documents = None
+    return initialize_memory()
 
 
 def search_incidents(query, n_results=3):
-    collection = get_collection()
-
-    if collection.count() == 0:
-        initialize_memory()
-
-    results = collection.query(
-        query_texts=[query],
-        n_results=n_results
-    )
-
+    results = search_incident_records(query, n_results=n_results)
     documents = results["documents"][0]
-
     return "\n\n--- Similar Incident ---\n\n".join(documents)
+
+
+def search_incident_records(query, n_results=3):
+    initialize_memory()
+    query_vector = vectorizer.transform([query])
+    scores = cosine_similarity(query_vector, document_vectors)[0]
+    ranked_indices = scores.argsort()[::-1][:n_results]
+
+    return {
+        "documents": [[documents[index] for index in ranked_indices]],
+        "ids": [[ids[index] for index in ranked_indices]],
+        "metadatas": [[metadatas[index] for index in ranked_indices]],
+        "distances": [[float(1 - scores[index]) for index in ranked_indices]],
+    }
 
 
 initialize_memory()

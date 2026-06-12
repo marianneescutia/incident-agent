@@ -1,6 +1,5 @@
 import os
 import sys
-import json
 import pandas as pd
 import streamlit as st
 
@@ -110,7 +109,7 @@ st.markdown(
 st.markdown(
     """
     <div class="subtitle">
-    Hybrid multi-agent incident response system using Phi-3, ChromaDB RAG,
+    Hybrid multi-agent incident response system using Phi-3, TF-IDF retrieval,
     RandomForest + IsolationForest, and a GRPO + LoRA fine-tuned Action Agent.
     </div>
     """,
@@ -130,7 +129,7 @@ with st.sidebar:
         **Agents**
         - Analytics Agent: Phi-3
         - Prediction Agent: RandomForest + IsolationForest
-        - Search Agent: ChromaDB RAG
+        - Search Agent: TF-IDF retrieval
         - Action Agent: GRPO + LoRA
         - Report Agent: Phi-3
 
@@ -214,9 +213,13 @@ if run_button:
         st.error("Please enter an incident log first.")
 
     else:
-        with st.spinner("Loading models and running multi-agent workflow..."):
-            coordinator_agent = load_coordinator()
-            result = coordinator_agent(incident_log)
+        try:
+            with st.spinner("Loading models and running multi-agent workflow..."):
+                coordinator_agent = load_coordinator()
+                result = coordinator_agent(incident_log)
+        except Exception as exc:
+            st.error(f"Workflow failed: {exc}")
+            st.stop()
 
         st.success("Analysis complete")
 
@@ -246,8 +249,8 @@ if run_button:
         )
 
         m4.metric(
-            "GPU Memory",
-            f"{metrics.get('gpu_memory_gb', 0)} GB"
+            "Peak GPU Memory",
+            f"{metrics.get('gpu_peak_memory_gb', 0)} GB"
         )
 
         m5.metric(
@@ -281,7 +284,7 @@ if run_button:
 
         with tab3:
             st.subheader("Analytics Agent Output")
-            st.code(result["analytics"]["response"])
+            st.json(result["analytics"]["response"])
 
         with tab4:
             st.subheader("ML Prediction Agent Output")
@@ -289,7 +292,7 @@ if run_button:
 
         with tab5:
             st.subheader("GRPO + LoRA Action Agent Output")
-            st.code(result["actions"]["response"])
+            st.json(result["actions"]["response"])
 
         st.divider()
 

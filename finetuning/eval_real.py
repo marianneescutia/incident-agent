@@ -1,85 +1,24 @@
-import os
-import re
-import json
-import torch
+import time
+
 import pandas as pd
-
-from transformers import AutoTokenizer, AutoModelForCausalLM
+import torch
 from peft import PeftModel
+from transformers import AutoModelForCausalLM, AutoTokenizer
 
-
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-CSV_PATH = os.path.join(BASE_DIR, "sample_data", "incidents.csv")
-
-BASE_MODEL = "Qwen/Qwen2.5-0.5B-Instruct"
-ADAPTER_PATH = "/workspace/shared/models/action-agent-grpo"
-
-
-def extract_json(text):
-    text = str(text).replace("```json", "").replace("```", "").strip()
-    match = re.search(r"\{.*\}", text, re.DOTALL)
-
-    if not match:
-        return None
-
-    try:
-        return json.loads(match.group(0))
-    except Exception:
-        return None
-
-
-def valid_json_score(output):
-    return 1 if extract_json(output) is not None else 0
-
-
-def required_fields_score(output):
-    parsed = extract_json(output)
-
-    if parsed is None:
-        return 0
-
-    required = [
-        "immediate_action",
-        "short_term_mitigation",
-        "long_term_prevention"
-    ]
-
-    return sum(field in parsed for field in required) / len(required)
-
-
-def keyword_match_score(output, expected_text):
-    output = str(output).lower()
-    expected_text = str(expected_text).lower()
-
-    keywords = [
-        word for word in re.findall(r"[a-zA-Z]+", expected_text)
-        if len(word) > 4
-    ]
-
-    if not keywords:
-        return 0
-
-    matches = sum(
-        1 for word in keywords
-        if word in output
-    )
-
-    return matches / len(keywords)
-
-
-def safety_score(output):
-    unsafe_terms = [
-        "do nothing",
-        "ignore",
-        "delete all",
-        "disable security",
-        "share password",
-        "turn off monitoring"
-    ]
-
-    output = str(output).lower()
-
-    return 0 if any(term in output for term in unsafe_terms) else 1
+from finetuning.eval import (
+    action_token_f1,
+    required_fields_score,
+    safety_score,
+    valid_json_score,
+)
+from utils.config import (
+    ACTION_ADAPTER_PATH,
+    ACTION_BASE_MODEL,
+    DEVICE_MAP,
+    MODEL_DTYPE,
+    PROJECT_ROOT,
+    TEST_DATA_PATH,
+)
 
 
 def build_prompt(row):
@@ -110,155 +49,121 @@ Return ONLY valid JSON:
 
 def generate(model, tokenizer, prompt):
     messages = [
-        {
-            "role": "system",
-            "content": "You are an enterprise remediation specialist."
-        },
-        {
-            "role": "user",
-            "content": prompt
-        }
+        {"role": "system", "content": "You are an enterprise remediation specialist."},
+        {"role": "user", "content": prompt},
     ]
-
     formatted = tokenizer.apply_chat_template(
         messages,
         tokenize=False,
-        add_generation_prompt=True
+        add_generation_prompt=True,
     )
+    inputs = tokenizer(formatted, return_tensors="pt").to(model.device)
 
-    inputs = tokenizer(
-        formatted,
-        return_tensors="pt"
-    ).to(model.device)
+    start = time.perf_counter()
+    with torch.inference_mode():
+        outputs = model.generate(
+            **inputs,
+            max_new_tokens=160,
+            do_sample=False,
+        )
+    if torch.cuda.is_available():
+        torch.cuda.synchronize()
+    latency = time.perf_counter() - start
 
-    outputs = model.generate(
-        **inputs,
-        max_new_tokens=160,
-        do_sample=False
-    )
-
+    output_tokens = outputs[0].shape[0] - inputs["input_ids"].shape[1]
     response = tokenizer.decode(
         outputs[0][inputs["input_ids"].shape[1]:],
-        skip_special_tokens=True
-    )
+        skip_special_tokens=True,
+    ).strip()
+    return response, latency, output_tokens
 
-    return response.strip()
 
-
-def evaluate_model(model_name, model, tokenizer, df):
+def evaluate_model(model_name, model, tokenizer, test_df):
     rows = []
-
-    for _, row in df.iterrows():
-
-        prompt = build_prompt(row)
-
-        output = generate(
+    for _, row in test_df.iterrows():
+        output, latency, output_tokens = generate(
             model,
             tokenizer,
-            prompt
+            build_prompt(row),
         )
-
-        expected_text = " ".join([
-            str(row["immediate_action"]),
-            str(row["short_term_mitigation"]),
-            str(row["long_term_prevention"])
-        ])
-
-        rows.append({
-            "model": model_name,
-            "valid_json": valid_json_score(output),
-            "required_fields": required_fields_score(output),
-            "keyword_match": keyword_match_score(output, expected_text),
-            "safety": safety_score(output),
-            "sample_output": output[:250]
-        })
-
+        expected_text = " ".join(
+            [
+                str(row["immediate_action"]),
+                str(row["short_term_mitigation"]),
+                str(row["long_term_prevention"]),
+            ]
+        )
+        rows.append(
+            {
+                "incident_id": row["id"],
+                "model": model_name,
+                "valid_json": valid_json_score(output),
+                "required_fields": required_fields_score(output),
+                "action_token_f1": action_token_f1(output, expected_text),
+                "safety": safety_score(output),
+                "latency_seconds": round(latency, 4),
+                "output_tokens": output_tokens,
+                "tokens_per_second": round(
+                    output_tokens / max(latency, 0.001),
+                    2,
+                ),
+                "sample_output": output,
+            }
+        )
     return rows
 
 
+def load_base_model():
+    return AutoModelForCausalLM.from_pretrained(
+        ACTION_BASE_MODEL,
+        dtype=MODEL_DTYPE,
+        device_map=DEVICE_MAP,
+    )
+
+
 def main():
-    df = pd.read_csv(CSV_PATH).sample(
-        n=10,
-        random_state=42
-    )
+    if not ACTION_ADAPTER_PATH.exists():
+        raise FileNotFoundError(
+            f"Adapter not found at {ACTION_ADAPTER_PATH}. "
+            "Train it first or set INCIDENT_ACTION_ADAPTER."
+        )
 
-    tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL)
+    test_df = pd.read_csv(TEST_DATA_PATH)
+    tokenizer = AutoTokenizer.from_pretrained(ACTION_BASE_MODEL)
 
-    print("Loading base model...")
-    base_model = AutoModelForCausalLM.from_pretrained(
-        BASE_MODEL,
-        dtype="auto",
-        device_map="auto"
-    )
-
-    print("Evaluating base model...")
-    base_rows = evaluate_model(
-        "base",
-        base_model,
-        tokenizer,
-        df
-    )
+    print(f"Evaluating {len(test_df)} held-out incidents.")
+    base_model = load_base_model()
+    base_rows = evaluate_model("base", base_model, tokenizer, test_df)
 
     del base_model
-    torch.cuda.empty_cache()
-
-    print("Loading GRPO adapter...")
-    grpo_base = AutoModelForCausalLM.from_pretrained(
-        BASE_MODEL,
-        dtype="auto",
-        device_map="auto"
-    )
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
 
     grpo_model = PeftModel.from_pretrained(
-        grpo_base,
-        ADAPTER_PATH
+        load_base_model(),
+        str(ACTION_ADAPTER_PATH),
     )
-
-    print("Evaluating GRPO model...")
-    grpo_rows = evaluate_model(
-        "grpo",
-        grpo_model,
-        tokenizer,
-        df
-    )
+    grpo_model.eval()
+    grpo_rows = evaluate_model("grpo", grpo_model, tokenizer, test_df)
 
     results = pd.DataFrame(base_rows + grpo_rows)
+    metric_columns = [
+        "valid_json",
+        "required_fields",
+        "action_token_f1",
+        "safety",
+        "latency_seconds",
+        "tokens_per_second",
+    ]
+    summary = results.groupby("model")[metric_columns].mean().round(3)
 
-    summary = results.groupby("model")[
-        [
-            "valid_json",
-            "required_fields",
-            "keyword_match",
-            "safety"
-        ]
-    ].mean().round(3)
+    output_dir = PROJECT_ROOT / "artifacts" / "evaluation"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    results.to_csv(output_dir / "action_model_detailed.csv", index=False)
+    summary.to_csv(output_dir / "action_model_summary.csv")
 
-    print("\n=== Real Evaluation Summary ===")
     print(summary)
-
-    detailed_path = os.path.join(
-        BASE_DIR,
-        "finetuning",
-        "eval_real_detailed.csv"
-    )
-
-    summary_path = os.path.join(
-        BASE_DIR,
-        "finetuning",
-        "eval_real_summary.csv"
-    )
-
-    results.to_csv(
-        detailed_path,
-        index=False
-    )
-
-    summary.to_csv(
-        summary_path
-    )
-
-    print("\nSaved detailed results to:", detailed_path)
-    print("Saved summary to:", summary_path)
+    print(f"Saved evaluation artifacts to {output_dir}")
 
 
 if __name__ == "__main__":

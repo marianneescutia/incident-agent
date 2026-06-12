@@ -1,0 +1,11 @@
+id,log,category,severity,impact,anomaly_detected,risk_level,likely_future_issue,confidence_score,immediate_action,short_term_mitigation,long_term_prevention
+3,WARNING: Memory leak detected Memory usage 92% Application response time increased,Application Stability,High,Application slowdown,True,High,Application crash,0.88,Restart application,Monitor memory usage,Refactor memory-intensive modules
+4,ERROR: Disk storage full 99% utilization Log writes failing,Infrastructure,High,Service instability,True,High,System crash,0.91,Clear temporary logs,Increase disk capacity,Implement log rotation
+10,ERROR: Payment service timeout during checkout,Business Critical Service,Critical,Transactions failing,True,Critical,Revenue loss,0.94,Restart payment service,Failover payment route,Add payment service redundancy
+19,WARNING: Unusual outbound traffic from internal server,Security,High,Possible data exfiltration,True,High,Data leak,0.91,Isolate server,Review outbound connections,Deploy egress monitoring
+24,CRITICAL: Admin privilege escalation detected,Security,Critical,Unauthorized admin access,True,Critical,System compromise,0.96,Revoke suspicious sessions,Audit admin activity,Implement privileged access monitoring
+36,ERROR: CRM integration API rate limited,Integration,Medium,CRM sync delayed,True,Medium,Data sync delay,0.68,Back off requests,Retry with exponential delay,Implement rate-limit aware sync
+38,WARNING: Email notification delivery delayed,Messaging,Low,Users receive late notifications,True,Low,Minor communication delay,0.55,Restart email worker,Check provider status,Add delivery monitoring
+43,WARNING: High garbage collection pause time,Application Performance,Medium,Application response delays,True,Medium,Latency degradation,0.72,Restart application,Tune JVM memory,Profile garbage collection
+47,ERROR: Web server thread pool exhausted,Web Service,High,Requests timing out,True,High,Web outage,0.88,Restart web service,Increase thread pool,Add autoscaling
+49,WARNING: Feature flag misconfiguration detected,Application,Medium,Wrong feature exposed,True,Medium,User-facing bug,0.69,Disable feature flag,Review config change,Add feature flag approval workflow

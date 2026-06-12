@@ -1,13 +1,11 @@
-import os
 import pandas as pd
 from datasets import Dataset
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-CSV_PATH = os.path.join(BASE_DIR, "sample_data", "incidents.csv")
+from utils.config import TRAIN_DATA_PATH
 
 
 def build_action_dataset():
-    df = pd.read_csv(CSV_PATH)
+    df = pd.read_csv(TRAIN_DATA_PATH)
 
     rows = []
 

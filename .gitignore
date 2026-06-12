@@ -22,3 +22,5 @@ wandb/
 runs/
 
 .DS_Store
+artifacts/
+.env
