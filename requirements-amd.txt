@@ -3,3 +3,4 @@
 trl==0.24.0
 streamlit>=1.40,<2
 sentencepiece>=0.2,<1
+scikit-learn>=1.5,<2
