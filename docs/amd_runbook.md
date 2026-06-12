@@ -34,6 +34,10 @@ python -m finetuning.grpo_trainer
 Save the terminal log. Record training duration, max steps, adapter size, and
 peak memory for the presentation.
 
+During training, verify that `loss` and `grad_norm` are not always zero. A
+`completions/clipped_ratio` of `1.0` for every step means the completion limit
+is too short and the adapter is not receiving a useful update.
+
 TRL is pinned to `0.24.0`, which matches the preinstalled Python 3.12,
 Transformers 4.57, PEFT 0.17, Accelerate 1.10, and Datasets 4.2 stack.
 
