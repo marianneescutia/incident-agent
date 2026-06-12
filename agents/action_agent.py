@@ -4,6 +4,7 @@ import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM
 from peft import PeftModel
 
+from utils.action_prompt import ACTION_OUTPUT_INSTRUCTIONS
 from utils.config import (
     ACTION_ADAPTER_PATH,
     ACTION_BASE_MODEL,
@@ -72,13 +73,7 @@ ML Prediction:
 Similar Historical Incidents:
 {retrieved_incident}
 
-Return ONLY valid JSON:
-
-{{
-  "immediate_action": "",
-  "short_term_mitigation": "",
-  "long_term_prevention": ""
-}}
+{ACTION_OUTPUT_INSTRUCTIONS}
 """
 
     messages = [
@@ -116,7 +111,7 @@ Return ONLY valid JSON:
         with torch.inference_mode():
             outputs = model.generate(
                 **inputs,
-                max_new_tokens=120,
+                max_new_tokens=128,
                 do_sample=False
             )
         if torch.cuda.is_available():

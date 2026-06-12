@@ -7,6 +7,7 @@ from trl import GRPOConfig, GRPOTrainer
 
 from finetuning.dataset_builder import build_action_dataset
 from finetuning.reward_functions import (
+    concise_json_reward,
     json_format_reward,
     remediation_keyword_reward,
     safety_reward
@@ -26,8 +27,8 @@ def make_grpo_config():
         "per_device_train_batch_size": 2,
         "gradient_accumulation_steps": 2,
         "num_generations": 2,
-        "max_completion_length": 192,
-        "max_steps": 100,
+        "max_completion_length": 128,
+        "max_steps": 150,
         "logging_steps": 1,
         "save_steps": 50,
         "seed": 42,
@@ -74,6 +75,7 @@ def main():
         reward_funcs=[
             json_format_reward,
             remediation_keyword_reward,
+            concise_json_reward,
             safety_reward
         ],
         args=training_args,

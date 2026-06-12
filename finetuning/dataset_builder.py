@@ -1,6 +1,7 @@
 import pandas as pd
 from datasets import Dataset
 
+from utils.action_prompt import ACTION_OUTPUT_INSTRUCTIONS
 from utils.config import TRAIN_DATA_PATH
 
 
@@ -26,13 +27,7 @@ Severity:
 Risk Level:
 {row["risk_level"]}
 
-Return ONLY valid JSON:
-
-{{
-  "immediate_action": "",
-  "short_term_mitigation": "",
-  "long_term_prevention": ""
-}}
+{ACTION_OUTPUT_INSTRUCTIONS}
 """
 
         expected = {

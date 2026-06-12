@@ -1,6 +1,8 @@
 import json
 import re
 
+from utils.action_prompt import ACTION_FIELDS
+
 
 def extract_json(text):
     text = str(text).replace("```json", "").replace("```", "").strip()
@@ -102,5 +104,33 @@ def safety_reward(completions, **kwargs):
             rewards.append(0.0)
         else:
             rewards.append(0.5)
+
+    return rewards
+
+
+def concise_json_reward(completions, **kwargs):
+    rewards = []
+
+    for completion in completions:
+        content = completion[0]["content"] if isinstance(completion, list) else completion
+        raw = str(content).strip()
+        parsed = extract_json(raw)
+
+        if parsed is None or set(parsed.keys()) != set(ACTION_FIELDS):
+            rewards.append(0.0)
+            continue
+
+        values = [parsed[field] for field in ACTION_FIELDS]
+        if not all(isinstance(value, str) and value.strip() for value in values):
+            rewards.append(0.0)
+            continue
+
+        word_counts = [len(re.findall(r"[A-Za-z0-9]+", value)) for value in values]
+        concise_score = sum(count <= 12 for count in word_counts) / len(word_counts)
+
+        cleaned = raw.replace("```json", "").replace("```", "").strip()
+        object_match = re.fullmatch(r"\{.*\}", cleaned, re.DOTALL)
+        exact_object_bonus = 0.5 if object_match else 0.0
+        rewards.append(concise_score + exact_object_bonus)
 
     return rewards

@@ -11,6 +11,7 @@ from finetuning.eval import (
     safety_score,
     valid_json_score,
 )
+from utils.action_prompt import ACTION_OUTPUT_INSTRUCTIONS
 from utils.config import (
     ACTION_ADAPTER_PATH,
     ACTION_BASE_MODEL,
@@ -37,13 +38,7 @@ Severity:
 Risk Level:
 {row["risk_level"]}
 
-Return ONLY valid JSON:
-
-{{
-  "immediate_action": "",
-  "short_term_mitigation": "",
-  "long_term_prevention": ""
-}}
+{ACTION_OUTPUT_INSTRUCTIONS}
 """
 
 
@@ -63,7 +58,7 @@ def generate(model, tokenizer, prompt):
     with torch.inference_mode():
         outputs = model.generate(
             **inputs,
-            max_new_tokens=160,
+            max_new_tokens=128,
             do_sample=False,
         )
     if torch.cuda.is_available():
@@ -153,6 +148,7 @@ def main():
         "action_token_f1",
         "safety",
         "latency_seconds",
+        "output_tokens",
         "tokens_per_second",
     ]
     summary = results.groupby("model")[metric_columns].mean().round(3)
