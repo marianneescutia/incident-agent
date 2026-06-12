@@ -1,7 +1,15 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-python -m pip install --no-cache-dir -r requirements-amd.txt
+python -m pip install --no-cache-dir \
+  "trl==0.24.0" \
+  "sentencepiece>=0.2,<1" \
+  "scikit-learn>=1.5,<2"
+
+# The AMD base image ships blinker 1.4 through distutils, which pip cannot
+# uninstall. Overlay a current wheel first, then install Streamlit normally.
+python -m pip install --no-cache-dir --ignore-installed "blinker>=1.9,<2"
+python -m pip install --no-cache-dir "streamlit>=1.40,<2"
 
 python - <<'PY'
 import torch

@@ -15,6 +15,9 @@ python -m unittest discover -s tests -v
 python -m scripts.system_report
 ```
 
+The setup installs the ML and TRL dependencies before Streamlit. This avoids a
+known conflict with the system-installed `blinker 1.4` package in the AMD image.
+
 Verify that the report contains:
 
 - `"cuda_api_available": true`
