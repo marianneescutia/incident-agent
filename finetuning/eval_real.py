@@ -74,6 +74,13 @@ def generate(model, tokenizer, prompt):
 
 
 def evaluate_model(model_name, model, tokenizer, test_df):
+    # Exclude one-time kernel/model warm-up from measured inference latency.
+    generate(
+        model,
+        tokenizer,
+        build_prompt(test_df.iloc[0]),
+    )
+
     rows = []
     for _, row in test_df.iterrows():
         output, latency, output_tokens = generate(
