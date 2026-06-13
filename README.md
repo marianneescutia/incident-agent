@@ -176,14 +176,6 @@ memory, GPU name, and ROCm version.
 These files are a submission snapshot. Running the evaluation scripts writes
 fresh outputs under the ignored runtime `artifacts/` directories.
 
-## Demo flow
-
-1. Select a database, security, GPU, or RAG incident.
-2. Show the retrieved historical incidents.
-3. Show risk, anomaly, and confidence.
-4. Show the GRPO remediation plan.
-5. Show the executive report.
-6. Close with held-out quality metrics and MI300X performance.
 
 ## Limitations and future work
 
@@ -203,4 +195,4 @@ fresh outputs under the ignored runtime `artifacts/` directories.
 - `evaluation/`: ML, RAG, and MI300X pipeline benchmarks.
 - `scripts/`: split generation and environment evidence.
 - `tests/`: data leakage and JSON validation checks.
-- `docs/`: architecture, AMD runbook, slide content, and demo script.
+- `docs/`: architecture.
