@@ -22,5 +22,7 @@ wandb/
 runs/
 
 .DS_Store
-artifacts/
+artifacts/*
+!artifacts/submission/
+!artifacts/submission/**
 .env

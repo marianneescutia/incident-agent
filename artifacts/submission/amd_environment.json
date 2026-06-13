@@ -1,0 +1,15 @@
+{
+  "python": "3.12.11",
+  "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.35",
+  "torch": "2.8.0+gitb2fb688",
+  "cuda_api_available": true,
+  "rocm_version": "7.0.51831-a3e329ad8",
+  "gpu_count": 1,
+  "gpus": [
+    {
+      "index": 0,
+      "name": "Instinct MI300X",
+      "memory_gb": 191.98
+    }
+  ]
+}

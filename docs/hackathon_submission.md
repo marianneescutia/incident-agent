@@ -41,18 +41,21 @@ development and ten are held out. State clearly that this is prototype data.
 
 ## Slide 4: Technical results
 
-Run the evaluation scripts on the final AMD environment and paste:
+Use the final measured submission results:
 
-- Prediction accuracy and macro-F1.
-- Retrieval risk/severity Recall@3 and category recall where represented.
-- Base vs GRPO action token F1 and JSON validity.
-- End-to-end warm latency.
-- Action-agent tokens per second.
-- Peak MI300X memory.
-- ROCm and PyTorch versions.
+- Prediction: 0.50 accuracy and 0.417 macro-F1 on 10 held-out incidents.
+- Retrieval: 0.90 risk Recall@3 and 0.90 severity Recall@3.
+- Exact category Recall@3: 0.20 on the five held-out categories represented in
+  the training corpus.
+- Action model: valid JSON 1.00 and required fields 1.00 for base and GRPO.
+- Action-token F1: 0.132 base vs 0.137 GRPO, a 3.8% relative improvement.
+- Action latency: 0.886 seconds base vs 1.274 seconds GRPO.
+- Warm pipeline benchmark: 8.16 seconds mean, 43.29 action tokens/second, and
+  8.46 GB peak GPU memory.
+- Environment: AMD Instinct MI300X, ROCm 7.0, PyTorch 2.8, Python 3.12.
 
-Never use the deleted legacy `eval_results.csv`; it did not represent model
-inference.
+Frame the fine-tuning result as a modest quality improvement with a latency
+trade-off. Do not claim a throughput improvement.
 
 ## Slide 5: Impact, innovation, and future work
 

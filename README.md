@@ -4,6 +4,30 @@ An enterprise incident-response prototype built for the AMD TCS Hackathon. It
 combines a multi-agent LLM workflow, TF-IDF retrieval over historical incidents,
 classical risk/anomaly models, and a GRPO + LoRA remediation agent.
 
+## Final submission snapshot
+
+The `main` branch is the submission-ready version. It includes the application,
+training and evaluation code, deterministic data splits, tests, AMD setup, and
+the final measured results from an AMD Instinct MI300X environment.
+
+| Evidence | Final measured result |
+|---|---:|
+| Held-out data | 10 of 50 synthetic incidents |
+| Risk classification | 0.50 accuracy / 0.417 macro-F1 |
+| Retrieval | 0.90 risk Recall@3 / 0.90 severity Recall@3 |
+| Base action-token F1 | 0.132 |
+| GRPO action-token F1 | 0.137 |
+| Structured output | 1.00 valid JSON / 1.00 required fields |
+| Safety check | 1.00 for base and GRPO |
+| Warm end-to-end latency | 8.16 seconds mean |
+| Action throughput | 43.29 tokens/second |
+| Peak GPU memory | 8.46 GB |
+
+The GRPO adapter improved held-out action-token F1 by 0.005 absolute, or
+approximately 3.8% relative. It did not improve latency or throughput, so this
+project reports the result as a modest quality gain with a performance trade-off.
+Machine-readable evidence is committed under `artifacts/submission/`.
+
 ## Problem
 
 Incident responders must correlate noisy logs, estimate operational risk, find
@@ -85,7 +109,11 @@ amd-smi
 
 The report is saved to `artifacts/system/amd_environment.json`. The setup script
 installs only the packages missing from the AMD image: TRL 0.24, Streamlit, and
-SentencePiece.
+SentencePiece, plus scikit-learn when needed.
+
+The trained adapter is intentionally excluded from Git because model artifacts
+are generated outputs. Reproduce it with the training command below, or point
+`INCIDENT_ACTION_ADAPTER` to an existing adapter directory.
 
 ## Train the remediation adapter
 
@@ -135,6 +163,18 @@ python -m evaluation.benchmark_pipeline --runs 3
 
 The JSON artifact includes end-to-end latency, tokens per second, peak GPU
 memory, GPU name, and ROCm version.
+
+## Final evidence files
+
+- `artifacts/submission/action_model_summary.csv`: base-vs-GRPO held-out results.
+- `artifacts/submission/prediction_summary.csv`: held-out risk classification.
+- `artifacts/submission/rag_summary.csv`: held-out retrieval metrics.
+- `artifacts/submission/pipeline_benchmark.json`: warm MI300X benchmark.
+- `artifacts/submission/amd_environment.json`: recorded Python, PyTorch, ROCm,
+  and GPU environment.
+
+These files are a submission snapshot. Running the evaluation scripts writes
+fresh outputs under the ignored runtime `artifacts/` directories.
 
 ## Demo flow
 
